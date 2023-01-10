@@ -1,0 +1,17 @@
+note over selain:
+sivu ladattu, tekstikenttään kirjoitettu
+"jotain", ja painetaan nappia
+end note
+
+selain->palvelin: HTTP POST /new_note_spa { content: "jotain", date: "(tähän aikaleima)" }
+
+note over palvelin:
+serveri tallentaa datan
+end note
+
+palvelin-->selain: 201 (Created, lisääminen onnistui)
+
+note over selain:
+selain suorittaa javascrpitiä, ja renderöi listan uudestaan
+lisäten uuden noten
+end note
