@@ -1,8 +1,18 @@
 const express = require('express')
 const morgan = require('morgan')
 const app = express()
+
+morgan.token('post_data', (req, _res) => {
+  if (req.method === 'POST') {
+    return JSON.stringify(req.body)
+  } else {
+    return ''
+  }
+})
+
 app.use(express.json())
-app.use(morgan('tiny'))
+// app.use(morgan('tiny'))
+app.use(morgan(':method :url :status :res[content-length] - :response-time ms :post_data'))
 
 const persons = [
   {
@@ -31,10 +41,10 @@ app.get('/api/persons/:id', (request, response) => {
   const id = request.params.id
   const person = persons.find(person => person.id === id)
   if (person) {
-    console.log(`Found person ${person}`)
+    // console.log(`Found person ${person}`)
     response.json(person)
   } else {
-    console.log(`Person with id ${id} not found!`)
+    // console.log(`Person with id ${id} not found!`)
     response.status(404).end()
   }
 })
@@ -44,19 +54,19 @@ app.delete('/api/persons/:id', (request, response) => {
   const person = persons.find(person => person.id === id)
   const index = persons.indexOf(person)
   if (index !== -1) {
-    console.log('Deleting person:')
-    console.log(persons[index])
+    // console.log('Deleting person:')
+    // console.log(persons[index])
 
     persons.splice(index, 1)
     response.status(200).end()
   } else {
-    console.log(`Deleting failed, person with id ${id} not found`)
+    // console.log(`Deleting failed, person with id ${id} not found`)
     response.status(404).end()
   }
 })
 
 app.get('/api/persons', (request, response) => {
-  persons.forEach(person => console.log(person))
+  // persons.forEach(person => console.log(person))
   response.json(persons)
 })
 
@@ -81,8 +91,8 @@ app.post('/api/persons', (request, response) => {
 
   const id = String(Math.floor(Math.random() * 4000000000))
   new_person.id = id
-  console.log('Created new person:')
-  console.log(new_person)
+  // console.log('Created new person:')
+  // console.log(new_person)
   persons.push(new_person)
   response.status(201).end()
 })
