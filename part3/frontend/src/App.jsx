@@ -33,34 +33,43 @@ const NewPersonForm = ({
 }
 
 const Persons = ({ persons, pattern, removePerson }) => {
-  return (
-    <div>
-      <h2>Numbers</h2>
-      <table>
-        <thead>
-          <tr>
-            <td><b>Name</b></td>
-            <td><b>Number</b></td>
-            <td></td>
-          </tr>
-        </thead>
-        <tbody>
-          {persons.filter((person) => {
-            if (pattern !== '') {
-              return person.name.toLowerCase().includes(pattern.toLowerCase())
-            } else { return true }
-          }).map((person) =>
-            <tr key={person.id}>
-              <td>{person.name}</td>
-              <td>{person.number}</td>
-              <td><button
-                onClick={() => removePerson(person)}>Delete</button></td>
+  if (persons.length > 0) {
+    return (
+      <div>
+        <h2>Numbers</h2>
+        <table>
+          <thead>
+            <tr>
+              <td><b>Name</b></td>
+              <td><b>Number</b></td>
+              <td></td>
             </tr>
-          )}
-        </tbody>
-      </table>
-    </div>
-  )
+          </thead>
+          <tbody>
+            {persons.filter((person) => {
+              if (pattern !== '') {
+                return person.name.toLowerCase().includes(pattern.toLowerCase())
+              } else { return true }
+            }).map((person) =>
+              <tr key={person.id}>
+                <td>{person.name}</td>
+                <td>{person.number}</td>
+                <td><button
+                  onClick={() => removePerson(person)}>Delete</button></td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+    )
+  } else {
+    return (
+      <div>
+        <h2>Numbers</h2>
+        <p>No numbers saved!</p>
+      </div>
+    )
+  }
 }
 
 const Notification = ({ message, isError }) => {
