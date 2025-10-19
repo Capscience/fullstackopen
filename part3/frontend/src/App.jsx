@@ -132,7 +132,7 @@ const App = () => {
         .catch(error => {
           setIsError(true)
           setMessage(
-            `Person '${persons[index].name}' was already removed from server`
+            `Update of person '${persons[index].name}' failed!`
           )
           setTimeout(() => {
             setMessage(null)
@@ -155,6 +155,14 @@ const App = () => {
           setTimeout(() => {
             setMessage(null)
           }, 3500)
+        })
+        .catch(error => {
+          console.log(error.response.data)
+          setIsError(true);
+          setMessage(error.response.data.error);
+          setTimeout(() => {
+            setMessage(null)
+          }, 3500);
         })
       : updatePerson(index)
   }

@@ -7,7 +7,7 @@ const app = express()
 app.use(express.static('dist'))
 app.use(express.json())
 
-morgan.token('post_data', (req, _res) => {
+morgan.token('post_data', (req) => {
   if (req.method === 'POST') {
     return JSON.stringify(req.body)
   } else {
@@ -17,7 +17,7 @@ morgan.token('post_data', (req, _res) => {
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :post_data'))
 
 app.get('/api/persons/:id', (request, response, next) => {
-  const person = Person.findById(request.params.id)
+  Person.findById(request.params.id)
     .then(person => {
       if (person) {
         // console.log(`Found person ${person}`)
@@ -32,11 +32,11 @@ app.get('/api/persons/:id', (request, response, next) => {
 
 app.delete('/api/persons/:id', (request, response, next) => {
   Person.findByIdAndDelete(request.params.id)
-    .then(_ => response.status(204).end())
+    .then(() => response.status(204).end())
     .catch(error => next(error))
 })
 
-app.get('/api/persons', (request, response, next) => {
+app.get('/api/persons', (_request, response, next) => {
   // persons.forEach(person => console.log(person))
   Person.find({})
     .then(people => {
@@ -48,11 +48,11 @@ app.get('/api/persons', (request, response, next) => {
 app.post('/api/persons', (request, response, next) => {
   const { name, number } = request.body
   if (!name) {
-    response.json({ error: "Name missing" })
+    response.json({ error: 'Name missing' })
     response.status(400).end()
     return
   } else if (!number) {
-    response.json({ error: "Number missing" })
+    response.json({ error: 'Number missing' })
     response.status(400).end()
     return
   }
@@ -73,6 +73,7 @@ app.post('/api/persons', (request, response, next) => {
             response.json(savedPerson)
             response.status(201).end()
           })
+          .catch(error => next(error))
       }
     })
     .catch(error => next(error))
@@ -91,12 +92,13 @@ app.put('/api/persons/:id', (request, response, next) => {
         .then((updatedPerson) => {
           response.json(updatedPerson)
         })
+        .catch(error => next(error))
     })
     .catch(error => next(error))
 })
 
-app.get('/info', (request, response, next) => {
-  const date = new Date();
+app.get('/info', (_request, response, next) => {
+  const date = new Date()
   Person.find({})
     .then(people => {
       response.send(`<p>Phonebook has info for ${people.length} people</p><p>${date.toString()}</p>`)
@@ -104,16 +106,18 @@ app.get('/info', (request, response, next) => {
     .catch(error => next(error))
 })
 
-const unknownEndpoint = (request, response) => {
+const unknownEndpoint = (_request, response) => {
   response.status(404).send({ error: 'unknown endpoint' })
 }
 app.use(unknownEndpoint)
 
-const errorHandler = (error, request, response, next) => {
+const errorHandler = (error, _request, response, next) => {
   console.error(error.message)
 
-  if (error.name === "CastError") {
-    return response.status(400).send({ error: "malformatted id" })
+  if (error.name === 'CastError') {
+    return response.status(400).send({ error: 'malformatted id' })
+  } else if (error.name === 'ValidationError') {
+    return response.status(400).json({ error: error.message })
   }
 
   next(error)
