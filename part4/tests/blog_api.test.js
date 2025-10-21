@@ -96,6 +96,70 @@ describe('posting a blog', async () => {
   })
 })
 
+describe('deleting a blog', async () => {
+  beforeEach(async () => {
+    await helper.resetDb()
+  })
+
+  test('with existing id deletes it', async () => {
+    const blogs = await helper.blogsInDb()
+    await api
+      .delete(`/api/blogs/${blogs[0].id}`)
+      .expect(204)
+
+    assert.strictEqual((await helper.blogsInDb()).length, blogs.length - 1)
+  })
+})
+
+describe('updating a blog', async () => {
+  const newData = {
+    author: 'Matti Luukkainen',
+    title: 'Syväsukellus moderniin websovelluskehitykseen',
+    url: 'https://fullstackopen.com',
+    likes: 500,
+  }
+
+  beforeEach(async () => {
+    await helper.resetDb()
+  })
+
+  test('that exists saves the new data', async () => {
+    const blogs = await helper.blogsInDb()
+    const blogToUpdate = blogs[0]
+    await api
+      .put(`/api/blogs/${blogToUpdate.id}`)
+      .send(newData)
+      .expect(200)
+    const updatedBlog = (await helper.blogsInDb()).find(blog => blog.id === blogToUpdate.id)
+    assert.strictEqual(updatedBlog.title, newData.title)
+    assert.strictEqual(updatedBlog.author, newData.author)
+    assert.strictEqual(updatedBlog.url, newData.url)
+    assert.strictEqual(updatedBlog.likes, newData.likes)
+  })
+
+  test('returns the updated blog', async () => {
+    const blogs = await helper.blogsInDb()
+    const blogToUpdate = blogs[0]
+    const response = await api
+      .put(`/api/blogs/${blogToUpdate.id}`)
+      .send(newData)
+      .expect(200)
+    const updatedBlog = response.body
+    assert.strictEqual(updatedBlog.title, newData.title)
+    assert.strictEqual(updatedBlog.author, newData.author)
+    assert.strictEqual(updatedBlog.url, newData.url)
+    assert.strictEqual(updatedBlog.likes, newData.likes)
+  })
+
+  test('with invalid id fails with 404', async () => {
+    const nonExistingId = await helper.nonExistingId()
+    await api
+      .put(`/api/blogs/${nonExistingId}`)
+      .send(newData)
+      .expect(404)
+  })
+})
+
 after(async () => {
   await mongoose.connection.close()
 })
