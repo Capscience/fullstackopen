@@ -18,7 +18,8 @@ morgan.token('post_data', (req) => {
     return ''
   }
 })
-app.use(morgan(':method :url :status :res[content-length] - :response-time ms :post_data'))
+if (process.env.NODE_ENV !== 'test')
+  app.use(morgan(':method :url :status :res[content-length] - :response-time ms :post_data'))
 
 logger.info('connecting to', config.MONGODB_URI)
 mongoose

@@ -1,19 +1,21 @@
-const { info, error } = require('./logger')
+const error = require('./logger').error
 
 const unknownEndpoint = (_request, response) => {
   response.status(404).send({ error: 'unknown endpoint' })
 }
 
-const errorHandler = (error, _request, response, next) => {
-  error(error.message)
+const errorHandler = (errorObject, _request, response, next) => {
+  error(errorObject.message)
 
-  if (error.name === 'CastError') {
+  if (errorObject.name === 'CastError') {
     return response.status(400).send({ error: 'malformatted id' })
-  } else if (error.name === 'ValidationError') {
-    return response.status(400).json({ error: error.message })
+  } else if (errorObject.name === 'ValidationError') {
+    return response.status(400).json({ error: errorObject.message })
+  } else if (errorObject.name === 'SyntaxError') {
+    return response.status(400).json({ error: errorObject.message })
   }
 
-  next(error)
+  next(errorObject)
 }
 
 module.exports = {
