@@ -9,7 +9,7 @@ const api = supertest(app)
 
 describe('get blogs', () => {
   beforeEach(async () => {
-    await helper.resetDb()
+    await helper.resetBlogsDb()
   })
 
   test('returns blogs as json', async () => {
@@ -40,13 +40,15 @@ describe('posting a blog', async () => {
   }
 
   beforeEach(async () => {
-    await helper.resetDb()
+    await helper.resetBlogsDb()
   })
 
   test('adds a blog to the db', async () => {
     const blogsBefore = await helper.blogsInDb()
+
     await api
       .post('/api/blogs')
+      .set('Authorization', 'Bearer ' + await helper.getToken('root'))
       .send(newBlog)
       .expect(201)
     const blogsAfter = await helper.blogsInDb()
@@ -54,7 +56,11 @@ describe('posting a blog', async () => {
   })
 
   test('creates a blog with correct data', async () => {
-    await api.post('/api/blogs').send(newBlog).expect(201)
+    await api
+      .post('/api/blogs')
+      .set('Authorization', 'Bearer ' + await helper.getToken('root'))
+      .send(newBlog)
+      .expect(201)
     const blogs = await helper.blogsInDb()
     const addedBlog = blogs.find(blog => blog.author === 'Matti Luukkainen')
     assert.strictEqual(addedBlog.author, newBlog.author)
@@ -66,6 +72,7 @@ describe('posting a blog', async () => {
   test('without likes sets them 0', async () => {
     await api
       .post('/api/blogs')
+      .set('Authorization', 'Bearer ' + await helper.getToken('root'))
       .send({
         author: 'Matti Luukkainen',
         title: 'Syväsukellus moderniin websovelluskehitykseen',
@@ -80,6 +87,7 @@ describe('posting a blog', async () => {
   test('without required fields returns 400', async () => {
     await api
       .post('/api/blogs')
+      .set('Authorization', 'Bearer ' + await helper.getToken('root'))
       .send({
         author: 'Matti Luukkainen',
         url: 'https://fullstackopen.com',
@@ -88,26 +96,73 @@ describe('posting a blog', async () => {
 
     await api
       .post('/api/blogs')
+      .set('Authorization', 'Bearer ' + await helper.getToken('root'))
       .send({
         author: 'Matti Luukkainen',
         title: 'Syväsukellus moderniin websovelluskehitykseen',
       })
       .expect(400)
   })
+
+  test('without a token fails with 401', async () => {
+    const blogsBefore = await helper.blogsInDb()
+    await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(401)
+    const blogsAfter = await helper.blogsInDb()
+    assert.strictEqual(blogsAfter.length, blogsBefore.length)
+  })
 })
 
 describe('deleting a blog', async () => {
   beforeEach(async () => {
-    await helper.resetDb()
+    await helper.resetBlogsDb()
   })
 
   test('with existing id deletes it', async () => {
     const blogs = await helper.blogsInDb()
     await api
       .delete(`/api/blogs/${blogs[0].id}`)
+      .set('Authorization', 'Bearer ' + await helper.getToken('root'))
       .expect(204)
 
-    assert.strictEqual((await helper.blogsInDb()).length, blogs.length - 1)
+    const blogsAfter = await helper.blogsInDb()
+    assert.strictEqual(blogsAfter.length, blogs.length - 1)
+  })
+
+  test('that does not exist fails with 404', async () => {
+    await api
+      .delete('/api/blogs/68f4f2c051f90c5d6022dc74')
+      .set('Authorization', 'Bearer ' + await helper.getToken('root'))
+      .expect(404)
+  })
+
+  test('without token fails with 401', async () => {
+    const blogs = await helper.blogsInDb()
+    const result = await api
+      .delete(`/api/blogs/${blogs[0].id}`)
+      .expect(401)
+      .expect('Content-Type', /application\/json/)
+
+    assert(result.body.error.includes('token missing or invalid'))
+    const blogsAfter = await helper.blogsInDb()
+    assert.strictEqual(blogsAfter.length, blogs.length)
+  })
+
+  test('fails if user is not the logged in user', async () => {
+    const blogs = await helper.blogsInDb()
+    const user = await helper.createUser('otheruser', 'sekret')
+
+    const result = await api
+      .delete(`/api/blogs/${blogs[0].id}`)
+      .set('Authorization', 'Bearer ' + await helper.getToken(user.username))
+      .expect(401)
+      .expect('Content-Type', /application\/json/)
+
+    assert(result.body.error.includes('only the owner can delete a blog'))
+    const blogsAfter = await helper.blogsInDb()
+    assert.strictEqual(blogsAfter.length, blogs.length)
   })
 })
 
@@ -120,7 +175,7 @@ describe('updating a blog', async () => {
   }
 
   beforeEach(async () => {
-    await helper.resetDb()
+    await helper.resetBlogsDb()
   })
 
   test('that exists saves the new data', async () => {

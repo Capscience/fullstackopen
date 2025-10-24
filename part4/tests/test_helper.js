@@ -1,4 +1,7 @@
+const jwt = require('jsonwebtoken')
+const bcrypt = require('bcrypt')
 const Blog = require('../models/blog')
+const User = require('../models/user')
 
 const initialBlogs = [
   {
@@ -51,14 +54,46 @@ const blogsInDb = async () => {
   return blogs.map(blog => blog.toJSON())
 }
 
-const resetDb = async () => {
+const resetBlogsDb = async () => {
   await Blog.deleteMany()
+  await User.deleteMany()
+  const passwordHash = await bcrypt.hash('sekret', 10)
+  const user = new User({ username: 'root', passwordHash })
+  const savedUser = await user.save()
+  initialBlogs.forEach(blog => {
+    blog.user = savedUser.id
+  })
   await Blog.insertMany(initialBlogs)
+}
+
+const usersInDb = async () => {
+  const users = await User.find({})
+  return users.map(u => u.toJSON())
+}
+
+const getToken = async (username) => {
+  const user = (await User.findOne({ username }))
+  const userForToken = {
+    username: user.username,
+    id: user.id,
+  }
+
+  return jwt.sign(userForToken, process.env.SECRET)
+}
+
+const createUser = async (username, password) => {
+  const passwordHash = await bcrypt.hash(password, 10)
+  const user = new User({ username, passwordHash })
+  const savedUser = await user.save()
+  return savedUser
 }
 
 module.exports = {
   initialBlogs,
   nonExistingId,
   blogsInDb,
-  resetDb,
+  resetBlogsDb,
+  usersInDb,
+  getToken,
+  createUser,
 }
