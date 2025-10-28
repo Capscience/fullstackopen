@@ -1,0 +1,32 @@
+.container {
+  width: 50%;
+  margin-left: 25%;
+  margin-right: 25%;
+}
+
+.error {
+  color: red;
+  background: lightgrey;
+  font-size: 20px;
+  border-style: solid;
+  border-radius: 5px;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.info {
+  color: green;
+  background: lightgrey;
+  font-size: 20px;
+  border-style: solid;
+  border-radius: 5px;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+button {
+  color: black;
+  font-size: 18;
+  border: 2px solid darkgrey;
+  border-radius: 3px;
+}
