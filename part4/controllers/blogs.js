@@ -45,7 +45,7 @@ blogsRouter.delete('/:id', async (request, response) => {
 })
 
 blogsRouter.put('/:id', async (request, response) => {
-  const { author, title, url, likes } = request.body
+  const { author, title, url, likes, user } = request.body
 
   const blog = await Blog.findById(request.params.id)
   if (!blog) response.status(404).end()
@@ -54,6 +54,7 @@ blogsRouter.put('/:id', async (request, response) => {
   blog.title = title
   blog.url = url
   blog.likes = likes
+  blog.user = user
   const updatedBlog = await blog.save()
   response.json(updatedBlog)
 })

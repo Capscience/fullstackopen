@@ -1,5 +1,4 @@
 const bcrypt = require('bcrypt')
-const logger = require('../utils/logger')
 const usersRouter = require('express').Router()
 const User = require('../models/user')
 
