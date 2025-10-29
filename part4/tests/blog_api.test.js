@@ -55,6 +55,16 @@ describe('posting a blog', async () => {
     assert.strictEqual(blogsAfter.length, blogsBefore.length + 1)
   })
 
+  test('returns the created blog with user object', async () => {
+    const response = await api
+      .post('/api/blogs')
+      .set('Authorization', 'Bearer ' + await helper.getToken('root'))
+      .send(newBlog)
+      .expect(201)
+    const blog = response.body
+    assert.strictEqual(blog.user.username, 'root')
+  })
+
   test('creates a blog with correct data', async () => {
     await api
       .post('/api/blogs')

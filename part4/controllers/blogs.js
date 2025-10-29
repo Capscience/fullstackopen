@@ -19,7 +19,7 @@ blogsRouter.post('/', async (request, response) => {
     title: body.title,
     url: body.url,
     likes: body.likes,
-    user: user.id,
+    user: user,
   })
 
   const savedBlog = await blog.save()
