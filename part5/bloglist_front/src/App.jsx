@@ -34,13 +34,14 @@ const App = () => {
   }
 
 
+
   const blogFormRef = useRef()
 
-
   useEffect(() => {
-    blogService.getAll().then(blogs =>
+    blogService.getAll().then(blogs => {
+      blogs.sort((a, b) => b.likes - a.likes)
       setBlogs(blogs)
-    )
+    })
   }, [])
 
   useEffect(() => {
@@ -66,8 +67,11 @@ const App = () => {
 
   const updateBlog = async newData => {
     try {
+      const blogUser = newData.user
+      newData.user = blogUser.id
       await blogService.update(newData)
       const newBlogs = await blogService.getAll()
+      newBlogs.sort((a, b) => b.likes - a.likes)
       setBlogs(newBlogs)
     } catch (exception) {
       console.log(exception)
@@ -79,6 +83,7 @@ const App = () => {
     try {
       await blogService.deleteBlog(blog)
       const newBlogs = await blogService.getAll()
+      newBlogs.sort((a, b) => b.likes - a.likes)
       setBlogs(newBlogs)
     } catch (exception) {
       console.log(exception)
@@ -125,15 +130,13 @@ const App = () => {
       <Notification message={message} isError={isError} />
 
       {!user && (
-        <Togglable buttonLabel='Login'>
-          <LoginForm
-            username={username}
-            password={password}
-            handleUsernameChange={({ target }) => setUsername(target.value)}
-            handlePasswordChange={({ target }) => setPassword(target.value)}
-            handleSubmit={handleLogin}
-          />
-        </Togglable>
+        <LoginForm
+          username={username}
+          password={password}
+          handleUsernameChange={({ target }) => setUsername(target.value)}
+          handlePasswordChange={({ target }) => setPassword(target.value)}
+          handleSubmit={handleLogin}
+        />
       )}
 
       {user && (
