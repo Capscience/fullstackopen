@@ -39,7 +39,7 @@ const Blog = ({ blog, user, updateBlog, deleteBlog }) => {
           <button onClick={handleLike}>Like</button><br />
           {blog.user && (<>Posted by {blog.user.name}<br /></>)}
           <button onClick={toggle}>Hide</button>
-          {blog.user && user.username === blog.user.username && (<button onClick={handleDelete} style={deleteButtonStyle}>Remove</button>)}
+          {user && blog.user && user.username === blog.user.username && (<button onClick={handleDelete} style={deleteButtonStyle}>Remove</button>)}
         </>
       )}
       {!showAll && (
