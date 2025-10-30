@@ -56,7 +56,8 @@ blogsRouter.put('/:id', async (request, response) => {
   blog.likes = likes
   blog.user = user
   const updatedBlog = await blog.save()
-  response.json(updatedBlog)
+  const blogWithUser = await Blog.findById(updatedBlog.id).populate('user', { username: 1, name: 1 })
+  response.json(blogWithUser)
 })
 
 module.exports = blogsRouter

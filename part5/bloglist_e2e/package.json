@@ -1,0 +1,17 @@
+{
+  "name": "bloglist_e2e",
+  "version": "1.0.0",
+  "description": "Bloglist app end-to-end tests",
+  "main": "index.js",
+  "scripts": {
+    "test": "playwright test --project firefox",
+    "test:all": "playwright test",
+    "test:report": "playwright show-report"
+  },
+  "author": "Simo Soini",
+  "license": "MIT",
+  "devDependencies": {
+    "@playwright/test": "^1.56.1",
+    "@types/node": "^24.9.2"
+  }
+}

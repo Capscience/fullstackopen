@@ -1,26 +1,11 @@
 import { useState } from 'react'
 import Togglable from './Togglable'
 
-const blogStyle = {
-  borderWidth: 1,
-  border: 'solid',
-  borderRadius: 10,
-  padding: 10,
-  marginTop: 5
-}
-
-const deleteButtonStyle = {
-  marginLeft: 5,
-  background: 'red',
-  borderColor: 'red',
-}
-
 const Blog = ({ blog, user, updateBlog, deleteBlog }) => {
   const [showAll, setShowAll] = useState(false)
   const toggle = () => setShowAll(!showAll)
   const handleLike = () => {
-    blog.likes++
-    updateBlog(blog)
+    updateBlog({ id: blog.id, title: blog.title, author: blog.author, url: blog.url, likes: ++blog.likes, user: blog.user.id })
   }
   const handleDelete = () => {
     if (window.confirm(`Delete '${blog.title}'?`)) {
@@ -28,7 +13,7 @@ const Blog = ({ blog, user, updateBlog, deleteBlog }) => {
     }
   }
   return (
-    <div style={blogStyle}>
+    <div className='blog'>
       "{blog.title}"<br />
       <i>by {blog.author}</i>
       {showAll && (
@@ -39,7 +24,7 @@ const Blog = ({ blog, user, updateBlog, deleteBlog }) => {
           <button onClick={handleLike}>Like</button><br />
           {blog.user && (<>Posted by {blog.user.name}<br /></>)}
           <button onClick={toggle}>Hide</button>
-          {user && blog.user && user.username === blog.user.username && (<button onClick={handleDelete} style={deleteButtonStyle}>Remove</button>)}
+          {user && blog.user && user.username === blog.user.username && (<button onClick={handleDelete} className='delete'>Remove</button>)}
         </>
       )}
       {!showAll && (

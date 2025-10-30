@@ -67,8 +67,6 @@ const App = () => {
 
   const updateBlog = async newData => {
     try {
-      const blogUser = newData.user
-      newData.user = blogUser.id
       await blogService.update(newData)
       const newBlogs = await blogService.getAll()
       newBlogs.sort((a, b) => b.likes - a.likes)
