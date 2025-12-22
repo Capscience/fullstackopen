@@ -1,3 +1,5 @@
+import { useDispatch, useSelector } from "react-redux"
+import { clearNotification } from "../reducers/notificationReducer"
 const Notification = () => {
   const style = {
     border: 'solid',
@@ -5,8 +7,18 @@ const Notification = () => {
     borderWidth: 1,
     marginBottom: 10
   }
+  const { notification } = useSelector(state => state)
+  const dispatch = useDispatch()
 
-  return <div style={style}>render here notification...</div>
+  return notification
+    ? (<div style={style}>
+      <p>{notification}</p>
+      <button onClick={() => dispatch(clearNotification())}>
+        Clear
+      </button>
+    </div>
+    )
+    : (<></>)
 }
 
 export default Notification
