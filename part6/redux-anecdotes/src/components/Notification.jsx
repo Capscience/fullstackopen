@@ -10,9 +10,9 @@ const Notification = () => {
   const { notification } = useSelector(state => state)
   const dispatch = useDispatch()
 
-  return notification
+  return notification.message
     ? (<div style={style}>
-      <p>{notification}</p>
+      <p>{notification.message}</p>
       <button onClick={() => dispatch(clearNotification())}>
         Clear
       </button>
