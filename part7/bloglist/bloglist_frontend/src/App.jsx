@@ -1,10 +1,10 @@
-import { useState, useEffect, useRef } from "react";
-import { useDispatch } from "react-redux";
+import { useEffect, useRef } from "react";
+import { useDispatch, useSelector } from "react-redux";
 
-import { setInfo, setError } from "./reducers/notificationReducer";
+import { setInfo } from "./reducers/notificationReducer";
+import { setUser } from "./reducers/userReducer";
 
 import blogService from "./services/blogs";
-import loginService from "./services/login";
 import "./index.css";
 
 import BlogList from "./components/BlogList";
@@ -16,15 +16,12 @@ import { initializeBlogs } from "./reducers/blogReducer";
 
 const App = () => {
   const dispatch = useDispatch();
-  const [blogs, setBlogs] = useState([]);
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [user, setUser] = useState(null);
+  const { user } = useSelector((state) => state);
 
   const blogFormRef = useRef();
 
   useEffect(() => {
-    dispatch(initializeBlogs())
+    dispatch(initializeBlogs());
   }, [dispatch]);
 
   useEffect(() => {
@@ -32,74 +29,19 @@ const App = () => {
     if (blogAppUser) {
       const user = JSON.parse(blogAppUser);
       blogService.setToken(user.token);
-      setUser(user);
+      dispatch(setUser(user));
     }
-  }, []);
-
-  const addBlog = async (newBlog) => {
-    try {
-      const addedBlog = await blogService.create(newBlog);
-      blogFormRef.current.toggleVisibility();
-      setBlogs(blogs.concat(addedBlog));
-      dispatch(
-        setInfo(`Added blog '${addedBlog.title}' by ${addedBlog.author}`),
-      );
-    } catch (exception) {
-      console.log(exception);
-      dispatch(setError(exception.response.data.error));
-    }
-  };
-
-  const updateBlog = async (newData) => {
-    try {
-      await blogService.update(newData);
-      const newBlogs = await blogService.getAll();
-      newBlogs.sort((a, b) => b.likes - a.likes);
-      setBlogs(newBlogs);
-    } catch (exception) {
-      console.log(exception);
-      dispatch(setError(exception.response.data.error));
-    }
-  };
-
-  const deleteBlog = async (blog) => {
-    try {
-      await blogService.deleteBlog(blog);
-      const newBlogs = await blogService.getAll();
-      newBlogs.sort((a, b) => b.likes - a.likes);
-      setBlogs(newBlogs);
-    } catch (exception) {
-      console.log(exception);
-      dispatch(setError(exception.response.data.error));
-    }
-  };
-
-  const handleLogin = async (event) => {
-    event.preventDefault();
-
-    try {
-      const user = await loginService.login({ username, password });
-      window.localStorage.setItem("blogAppUser", JSON.stringify(user));
-      blogService.setToken(user.token);
-      setUser(user);
-      setUsername("");
-      setPassword("");
-      dispatch(setInfo("Login succesful"));
-    } catch (exception) {
-      console.log(exception);
-      dispatch(setError(exception.response.data.error));
-    }
-    console.log("logging in with", username, password);
-  };
+  }, [dispatch]);
 
   const handleLogout = (event) => {
     event.preventDefault();
     window.localStorage.removeItem("blogAppUser");
     blogService.setToken(null);
-    setUser(null);
+    dispatch(setUser(null));
     console.log("Logged out");
     dispatch(setInfo("Logged out"));
   };
+  console.log(user);
 
   return (
     <div className="container">
@@ -112,23 +54,15 @@ const App = () => {
       <h1>Blogs</h1>
       <Notification />
 
-      {!user && (
-        <LoginForm
-          username={username}
-          password={password}
-          handleUsernameChange={({ target }) => setUsername(target.value)}
-          handlePasswordChange={({ target }) => setPassword(target.value)}
-          handleSubmit={handleLogin}
-        />
-      )}
+      {!user && <LoginForm />}
 
       {user && (
         <Togglable buttonLabel="Add new blog" ref={blogFormRef}>
-          <BlogForm addBlog={addBlog} />
+          <BlogForm />
         </Togglable>
       )}
 
-      <BlogList user={user} />
+      <BlogList />
     </div>
   );
 };

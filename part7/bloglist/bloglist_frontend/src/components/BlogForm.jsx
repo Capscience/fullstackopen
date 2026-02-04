@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { useDispatch } from "react-redux";
-import { appendBlog } from "../reducers/blogReducer"
+import { appendBlog } from "../reducers/blogReducer";
 
 const BlogForm = () => {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
 
   const [author, setAuthor] = useState("");
   const [title, setTitle] = useState("");
@@ -16,7 +16,7 @@ const BlogForm = () => {
         author,
         title,
         url,
-      })
+      }),
     );
     setAuthor("");
     setTitle("");

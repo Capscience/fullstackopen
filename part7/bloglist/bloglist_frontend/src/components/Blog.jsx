@@ -1,9 +1,11 @@
 import { useState } from "react";
-import Togglable from "./Togglable";
+import { useSelector } from "react-redux";
 
-const Blog = ({ blog, user, updateBlog, deleteBlog }) => {
+const Blog = ({ blog, updateBlog, deleteBlog }) => {
+  const { user } = useSelector((state) => state);
   const [showAll, setShowAll] = useState(false);
   const toggle = () => setShowAll(!showAll);
+
   const handleLike = () => {
     updateBlog({
       id: blog.id,
@@ -14,11 +16,13 @@ const Blog = ({ blog, user, updateBlog, deleteBlog }) => {
       user: blog.user.id,
     });
   };
+
   const handleDelete = () => {
     if (window.confirm(`Delete '${blog.title}'?`)) {
       deleteBlog(blog);
     }
   };
+
   return (
     <div className="blog">
       "{blog.title}"<br />
