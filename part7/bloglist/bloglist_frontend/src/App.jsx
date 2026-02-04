@@ -1,7 +1,12 @@
 import { useState, useEffect, useRef } from "react";
+import { useDispatch } from "react-redux";
+
+import { setInfo, setError } from "./reducers/notificationReducer";
+
 import blogService from "./services/blogs";
 import loginService from "./services/login";
 import "./index.css";
+
 import Blog from "./components/Blog";
 import BlogForm from "./components/BlogForm";
 import LoginForm from "./components/LoginForm";
@@ -9,28 +14,11 @@ import Notification from "./components/Notification";
 import Togglable from "./components/Togglable";
 
 const App = () => {
+  const dispatch = useDispatch();
   const [blogs, setBlogs] = useState([]);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [user, setUser] = useState(null);
-
-  // Notifications
-  const [message, setMessage] = useState(null);
-  const [isError, setIsError] = useState(false);
-  const notify = (newMessage) => {
-    setMessage(newMessage);
-    setIsError(false);
-    setTimeout(() => {
-      setMessage(null);
-    }, 3500);
-  };
-  const errorMessage = (newMessage) => {
-    setMessage(newMessage);
-    setIsError(true);
-    setTimeout(() => {
-      setMessage(null);
-    }, 3500);
-  };
 
   const blogFormRef = useRef();
 
@@ -55,10 +43,12 @@ const App = () => {
       const addedBlog = await blogService.create(newBlog);
       blogFormRef.current.toggleVisibility();
       setBlogs(blogs.concat(addedBlog));
-      notify(`Added blog '${addedBlog.title}' by ${addedBlog.author}`);
+      dispatch(
+        setInfo(`Added blog '${addedBlog.title}' by ${addedBlog.author}`),
+      );
     } catch (exception) {
       console.log(exception);
-      errorMessage(exception.response.data.error);
+      dispatch(setError(exception.response.data.error));
     }
   };
 
@@ -70,7 +60,7 @@ const App = () => {
       setBlogs(newBlogs);
     } catch (exception) {
       console.log(exception);
-      errorMessage(exception.response.data.error);
+      dispatch(setError(exception.response.data.error));
     }
   };
 
@@ -82,7 +72,7 @@ const App = () => {
       setBlogs(newBlogs);
     } catch (exception) {
       console.log(exception);
-      errorMessage(exception.response.data.error);
+      dispatch(setError(exception.response.data.error));
     }
   };
 
@@ -96,10 +86,10 @@ const App = () => {
       setUser(user);
       setUsername("");
       setPassword("");
-      notify("Login succesful");
+      dispatch(setInfo("Login succesful"));
     } catch (exception) {
       console.log(exception);
-      errorMessage(exception.response.data.error);
+      dispatch(setError(exception.response.data.error));
     }
     console.log("logging in with", username, password);
   };
@@ -110,7 +100,7 @@ const App = () => {
     blogService.setToken(null);
     setUser(null);
     console.log("Logged out");
-    notify("Logged out");
+    dispatch(setInfo("Logged out"));
   };
 
   return (
@@ -122,7 +112,7 @@ const App = () => {
         </>
       )}
       <h1>Blogs</h1>
-      <Notification message={message} isError={isError} />
+      <Notification />
 
       {!user && (
         <LoginForm
