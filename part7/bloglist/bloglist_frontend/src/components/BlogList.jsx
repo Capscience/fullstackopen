@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from "react-redux"
 import Blog from "./Blog"
-import { likeBlog } from "../reducers/blogReducer"
+import { likeBlog, deleteBlog } from "../reducers/blogReducer"
 import { setInfo } from "../reducers/notificationReducer"
 
 const BlogList = ({ user }) => {
@@ -15,7 +15,10 @@ const BlogList = ({ user }) => {
           blog={blog}
           user={user}
           updateBlog={blog => dispatch(likeBlog(blog))}
-          deleteBlog={() => dispatch(setInfo("Deleting not yet implemented"))}
+          deleteBlog={blog => {
+            dispatch(deleteBlog(blog))
+            dispatch(setInfo(`Deleted blog ${blog.title}`))
+          }}
         />
       ))}
     </>

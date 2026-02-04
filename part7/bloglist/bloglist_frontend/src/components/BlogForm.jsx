@@ -1,18 +1,26 @@
+import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { appendBlog } from "../reducers/blogReducer"
 
 const BlogForm = () => {
   const dispatch = useDispatch()
 
+  const [author, setAuthor] = useState("");
+  const [title, setTitle] = useState("");
+  const [url, setUrl] = useState("");
+
   const addBlog = async (event) => {
     event.preventDefault();
     dispatch(
       appendBlog({
-        author: event.target.author.value,
-        title: event.target.title.value,
-        url: event.target.url.value
+        author,
+        title,
+        url,
       })
     );
+    setAuthor("");
+    setTitle("");
+    setUrl("");
   };
 
   return (
@@ -24,7 +32,8 @@ const BlogForm = () => {
             Title:
             <input
               type="text"
-              name="title"
+              value={title}
+              onChange={({ target }) => setTitle(target.value)}
             />
           </label>
         </div>
@@ -33,7 +42,8 @@ const BlogForm = () => {
             Author:
             <input
               type="text"
-              name="author"
+              value={author}
+              onChange={({ target }) => setAuthor(target.value)}
             />
           </label>
         </div>
@@ -42,7 +52,8 @@ const BlogForm = () => {
             URL:
             <input
               type="text"
-              name="url"
+              value={url}
+              onChange={({ target }) => setUrl(target.value)}
             />
           </label>
         </div>
