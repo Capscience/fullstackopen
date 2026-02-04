@@ -10,7 +10,7 @@ const Blog = ({ blog, user, updateBlog, deleteBlog }) => {
       title: blog.title,
       author: blog.author,
       url: blog.url,
-      likes: ++blog.likes,
+      likes: blog.likes + 1,
       user: blog.user.id,
     });
   };
