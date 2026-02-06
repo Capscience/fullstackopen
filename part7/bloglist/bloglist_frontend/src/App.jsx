@@ -13,10 +13,11 @@ import Notification from "./components/Notification";
 import HomePage from "./pages/HomePage";
 import UsersPage from "./pages/UsersPage";
 import SingleUserPage from "./pages/SingleUserPage";
+import BlogPage from "./pages/BlogPage";
 
 const App = () => {
   const dispatch = useDispatch();
-  const { user } = useSelector((state) => state);
+  const user = useSelector(state => state.user);
 
   useEffect(() => {
     const blogAppUser = window.localStorage.getItem("blogAppUser");
@@ -59,6 +60,7 @@ const App = () => {
         <Route path="/" element={<HomePage />} />
         <Route path="/users" element={<UsersPage />} />
         <Route path="/users/:id" element={<SingleUserPage />} />
+        <Route path="/blogs/:id" element={<BlogPage />} />
       </Routes>
 
     </div>

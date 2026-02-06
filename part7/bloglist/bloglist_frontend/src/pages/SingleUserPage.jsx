@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useMatch } from "react-router-dom";
+import { Link, useMatch } from "react-router-dom";
 import { initializeUsers } from "../reducers/userReducer";
 
 const SingleUserPage = () => {
@@ -25,7 +25,7 @@ const SingleUserPage = () => {
       <h3>Blogs:</h3>
       <ul>
         {foundUser.blogs.map(blog => (
-          <li key={blog.id}> {blog.title}</li>
+          <li key={blog.id}><Link to={`/blogs/${blog.id}`}>{blog.title}</Link></li>
         ))}
       </ul>
     </>

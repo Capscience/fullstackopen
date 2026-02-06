@@ -5,11 +5,11 @@ import { Link } from "react-router-dom";
 
 const UsersPage = () => {
   const dispatch = useDispatch();
-  const { user, users } = useSelector(state => state);
+  const { users } = useSelector(state => state);
   useEffect(() => {
     dispatch(initializeUsers());
   }, [dispatch])
-  return user ? (
+  return (
     <>
       <h2>Users</h2>
       <table>
@@ -29,7 +29,7 @@ const UsersPage = () => {
         </tbody>
       </table>
     </>
-  ) : null;
+  );
 }
 
 export default UsersPage;
