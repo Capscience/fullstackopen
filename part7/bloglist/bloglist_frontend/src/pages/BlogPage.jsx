@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useMatch, useNavigate } from "react-router-dom";
 import { likeBlog, deleteBlog, initializeBlogs } from "../reducers/blogReducer";
-import { setError, setInfo } from "../reducers/notificationReducer";
+import { setInfo } from "../reducers/notificationReducer";
 
 const BlogPage = () => {
   const dispatch = useDispatch();
@@ -10,18 +10,15 @@ const BlogPage = () => {
   const { user, blogs } = useSelector(state => state);
 
   useEffect(() => {
-    dispatch(initializeBlogs())
-  }, [dispatch])
+    if (blogs.length === 0) {
+      dispatch(initializeBlogs())
+    }
+  }, [blogs.length, dispatch])
 
   const match = useMatch("/blogs/:id")
   const blog = match
     ? blogs.find((blog) => blog.id === match.params.id)
     : null;
-
-  if (!blog) {
-    dispatch(setError("Blog not found!"))
-    navigate("/")
-  }
 
   const handleLike = () => {
     console.log("Liking blog")
@@ -43,10 +40,7 @@ const BlogPage = () => {
     }
   };
 
-  if (!user || !blog) {
-    return null;
-  }
-  return (
+  return blog ? (
     <>
       <h2>{blog.title}</h2>
 
@@ -66,8 +60,18 @@ const BlogPage = () => {
           Remove
         </button>
       )}
+      {blog.comments.length !== 0 && (
+        <>
+          <h3>Comments</h3>
+          <ul>
+            {blog.comments.map(comment => (
+              <li key={comment.id}>{comment.content}</li>
+            ))}
+          </ul>
+        </>
+      )}
     </>
-  )
+  ) : null;
 }
 
 export default BlogPage;

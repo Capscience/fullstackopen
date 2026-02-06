@@ -1,11 +1,20 @@
 import { useDispatch, useSelector } from "react-redux";
 import Blog from "./Blog";
-import { likeBlog, deleteBlog } from "../reducers/blogReducer";
+import { likeBlog, deleteBlog, initializeBlogs } from "../reducers/blogReducer";
 import { setInfo } from "../reducers/notificationReducer";
+import { useEffect } from "react";
 
 const BlogList = ({ user }) => {
   const { blogs } = useSelector((state) => state);
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (blogs.length === 0) {
+      dispatch(initializeBlogs());
+    }
+    console.log("rerender")
+  }, [blogs, dispatch]);
+
 
   return (
     <>
