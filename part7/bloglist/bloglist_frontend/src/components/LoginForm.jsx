@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 
-import { setUser } from "../reducers/userReducer";
+import { setUser } from "../reducers/loginReducer";
 import { setInfo, setError } from "../reducers/notificationReducer";
 
 import loginService from "../services/login";

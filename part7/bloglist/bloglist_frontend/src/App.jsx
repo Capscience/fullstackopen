@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Routes, Route, Link } from "react-router-dom";
 
 import { setInfo } from "./reducers/notificationReducer";
-import { setUser } from "./reducers/userReducer";
+import { setUser } from "./reducers/loginReducer";
 
 import blogService from "./services/blogs";
 import "./index.css";
