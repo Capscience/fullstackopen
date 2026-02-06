@@ -1,5 +1,6 @@
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { Routes, Route, Link } from "react-router-dom";
 
 import { setInfo } from "./reducers/notificationReducer";
 import { setUser } from "./reducers/userReducer";
@@ -7,22 +8,14 @@ import { setUser } from "./reducers/userReducer";
 import blogService from "./services/blogs";
 import "./index.css";
 
-import BlogList from "./components/BlogList";
-import BlogForm from "./components/BlogForm";
 import LoginForm from "./components/LoginForm";
 import Notification from "./components/Notification";
-import Togglable from "./components/Togglable";
-import { initializeBlogs } from "./reducers/blogReducer";
+import HomePage from "./pages/HomePage";
+import UsersPage from "./pages/UsersPage";
 
 const App = () => {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state);
-
-  const blogFormRef = useRef();
-
-  useEffect(() => {
-    dispatch(initializeBlogs());
-  }, [dispatch]);
 
   useEffect(() => {
     const blogAppUser = window.localStorage.getItem("blogAppUser");
@@ -30,6 +23,7 @@ const App = () => {
       const user = JSON.parse(blogAppUser);
       blogService.setToken(user.token);
       dispatch(setUser(user));
+      console.log(`Logged in cached ${user.username} from local storage`)
     }
   }, [dispatch]);
 
@@ -41,7 +35,6 @@ const App = () => {
     console.log("Logged out");
     dispatch(setInfo("Logged out"));
   };
-  console.log(user);
 
   return (
     <div className="container">
@@ -51,18 +44,21 @@ const App = () => {
           <button onClick={handleLogout}>Logout</button>
         </>
       )}
+      <div>
+        <Link to="/">Blogs</Link>
+        <Link to="/users">Users</Link>
+      </div>
+
       <h1>Blogs</h1>
       <Notification />
 
       {!user && <LoginForm />}
 
-      {user && (
-        <Togglable buttonLabel="Add new blog" ref={blogFormRef}>
-          <BlogForm />
-        </Togglable>
-      )}
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/users" element={<UsersPage />} />
+      </Routes>
 
-      <BlogList />
     </div>
   );
 };
