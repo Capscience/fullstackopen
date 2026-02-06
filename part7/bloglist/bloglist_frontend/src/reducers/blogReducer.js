@@ -56,4 +56,16 @@ export const deleteBlog = (blog) => {
   };
 };
 
+export const commentBlog = (blog, comment) => {
+  return async (dispatch) => {
+    const newComment = await blogService.addComment(blog, comment);
+    dispatch(
+      updateBlog({
+        ...blog,
+        comments: blog.comments.concat(newComment),
+      }),
+    );
+  };
+};
+
 export default blogSlice.reducer;

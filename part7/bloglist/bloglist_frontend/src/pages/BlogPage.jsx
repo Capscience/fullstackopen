@@ -4,6 +4,8 @@ import { useMatch, useNavigate } from "react-router-dom";
 import { likeBlog, deleteBlog, initializeBlogs } from "../reducers/blogReducer";
 import { setInfo } from "../reducers/notificationReducer";
 
+import BlogComments from "../components/BlogComments";
+
 const BlogPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -60,16 +62,7 @@ const BlogPage = () => {
           Remove
         </button>
       )}
-      {blog.comments.length !== 0 && (
-        <>
-          <h3>Comments</h3>
-          <ul>
-            {blog.comments.map(comment => (
-              <li key={comment.id}>{comment.content}</li>
-            ))}
-          </ul>
-        </>
-      )}
+      <BlogComments blog={blog} />
     </>
   ) : null;
 }
