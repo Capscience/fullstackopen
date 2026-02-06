@@ -12,6 +12,7 @@ import LoginForm from "./components/LoginForm";
 import Notification from "./components/Notification";
 import HomePage from "./pages/HomePage";
 import UsersPage from "./pages/UsersPage";
+import SingleUserPage from "./pages/SingleUserPage";
 
 const App = () => {
   const dispatch = useDispatch();
@@ -57,6 +58,7 @@ const App = () => {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/users" element={<UsersPage />} />
+        <Route path="/users/:id" element={<SingleUserPage />} />
       </Routes>
 
     </div>
