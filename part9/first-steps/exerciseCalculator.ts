@@ -8,7 +8,27 @@ interface Result {
   average: number;
 }
 
-const calculateExercises = (dailyHours: Array<number>, target: number): Result => {
+interface ExerciseInput {
+  target: number;
+  dailyHours: Array<number>;
+}
+
+const parseExerciseArguments = (args: Array<string>): ExerciseInput => {
+  if (args.length < 4) throw new Error('Too few arguments!');
+
+  const [, , stringTarget, ...stringDailyHours] = args;
+  if (isNaN(Number(stringTarget))) throw new Error('Target must be a number!');
+  const target = Number(stringTarget);
+  const dailyHours = stringDailyHours.map(value => Number(value))
+  if (dailyHours.some(value => isNaN(value))) throw new Error('Hours must be numbers!');
+  return {
+    target,
+    dailyHours,
+  }
+}
+
+const calculateExercises = (input: ExerciseInput): Result => {
+  const { target, dailyHours } = input;
   const descriptions = [
     "Time to lock in",
     "Not bad, not bad",
@@ -45,4 +65,12 @@ const calculateRating = (average: number, target: number): 1 | 2 | 3 => {
   }
 }
 
-console.log(calculateExercises([3, 0, 2, 4.5, 0, 3, 1], 2))
+try {
+  console.log(calculateExercises(parseExerciseArguments(process.argv)))
+} catch (error: unknown) {
+  let errorMessage = 'Something went wrong.';
+  if (error instanceof Error) {
+    errorMessage += ' Error: ' + error.message;
+    console.error(errorMessage);
+  }
+}
