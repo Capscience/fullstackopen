@@ -65,12 +65,17 @@ const calculateRating = (average: number, target: number): 1 | 2 | 3 => {
   }
 };
 
-try {
-  console.log(calculateExercises(parseExerciseArguments(process.argv)));
-} catch (error: unknown) {
-  let errorMessage = 'Something went wrong.';
-  if (error instanceof Error) {
-    errorMessage += ' Error: ' + error.message;
-    console.error(errorMessage);
+if (require.main === module) {
+  try {
+    console.log(calculateExercises(parseExerciseArguments(process.argv)));
+  } catch (error: unknown) {
+    let errorMessage = 'Something went wrong.';
+    if (error instanceof Error) {
+      errorMessage += ' Error: ' + error.message;
+      console.error(errorMessage);
+    }
   }
-}
+};
+
+export { ExerciseInput };
+export default calculateExercises;
