@@ -23,7 +23,7 @@ const addEntry = (entry: NewPatient): NonSensitivePatient => {
 
   const { id, name, dateOfBirth, gender, occupation } = patient;
   return { id, name, dateOfBirth, gender, occupation };
-}
+};
 
 export default {
   getEntries,

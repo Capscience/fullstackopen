@@ -5,7 +5,7 @@ import patientRouter from './routes/patients';
 
 const app = express();
 app.use(express.json());
-app.use(cors())
+app.use(cors());
 
 app.use('/api/diagnoses', diagnosisRouter);
 app.use('/api/patients', patientRouter);
