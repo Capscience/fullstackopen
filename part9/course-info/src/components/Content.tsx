@@ -1,13 +1,14 @@
-import CoursePart, { type CoursePartProps } from "./CoursePart";
+import type { CoursePart } from "../../data/courseParts";
+import Part from "./Part";
 
 interface ContentProps {
-  courseParts: CoursePartProps[];
+  courseParts: CoursePart[];
 }
 
 const Content = (props: ContentProps) => {
   return (
     <>
-      {props.courseParts.map(part => <CoursePart {...part} />)}
+      {props.courseParts.map(part => <Part key={part.name} {...part} />)}
     </>
   )
 }
