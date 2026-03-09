@@ -17,6 +17,10 @@ const EntryForm = (props: EntryFormProps) => {
   const onSubmit = async (event: React.SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
     setError("");
+    if (!date || !visibility || !weather) {
+      setError("Some values are missing!");
+      return;
+    }
     const newEntry: NewDiaryEntry = {
       date,
       visibility: visibility as Visibility,
@@ -29,8 +33,6 @@ const EntryForm = (props: EntryFormProps) => {
       await props.addEntry(addedEntry);
 
       setDate("");
-      setVisibility("");
-      setWeather("");
       setComment("");
     } catch (e) {
       if (axios.isAxiosError<string, Record<string, unknown>>(e)) {
@@ -43,6 +45,8 @@ const EntryForm = (props: EntryFormProps) => {
     };
   };
 
+  const capitalize = (word: string): string => word.charAt(0).toUpperCase() + word.slice(1);
+
   return (
     <>
       {error && (
@@ -52,20 +56,38 @@ const EntryForm = (props: EntryFormProps) => {
         <div>
           <label>
             Date
-            <input name="date" type="text" value={date} onChange={({ target }) => setDate(target.value)} />
+            <input name="date" type="date" value={date} onChange={({ target }) => setDate(target.value)} />
           </label>
         </div>
         <div>
-          <label>
-            Visibility
-            <input name="visibility" type="text" value={visibility} onChange={({ target }) => setVisibility(target.value)} />
-          </label>
+          <fieldset>
+            <legend>Visibility</legend>
+            {["great", "good", "ok", "poor"].map(value =>
+            (
+              <div key={value}>
+                <label>
+                  {capitalize(value)}
+                  <input name="visibility" type="radio" onChange={() => setVisibility(value)} />
+                </label>
+              </div>
+            )
+            )}
+          </fieldset>
         </div>
         <div>
-          <label>
-            Weather
-            <input name="weather" type="text" value={weather} onChange={({ target }) => setWeather(target.value)} />
-          </label>
+          <fieldset>
+            <legend>Weather</legend>
+            {["sunny", "rainy", "cloudy", "stormy", "windy"].map(value =>
+            (
+              <div key={value}>
+                <label>
+                  {capitalize(value)}
+                  <input name="weather" type="radio" onChange={() => setWeather(value)} />
+                </label>
+              </div>
+            )
+            )}
+          </fieldset>
         </div>
         <div>
           <label>
