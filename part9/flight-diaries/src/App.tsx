@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import type { DiaryEntry, NewDiaryEntry } from "./types";
+import type { DiaryEntry } from "./types";
 import Entry from "./components/Entry";
 import diaryService from "./services/diaries";
 import EntryForm from "./components/EntryForm";
@@ -12,9 +12,8 @@ function App() {
     })
   }, []);
 
-  const addEntry = async (newEntry: NewDiaryEntry) => {
-    const addedEntry = await diaryService.create(newEntry);
-    setDiaryEntries(diaryEntries.concat(addedEntry));
+  const addEntry = async (newEntry: DiaryEntry) => {
+    setDiaryEntries(diaryEntries.concat(newEntry));
   }
 
   return (

@@ -1,33 +1,53 @@
 import { useState } from "react";
-import type { NewDiaryEntry, Visibility, Weather } from "../types";
+import axios from "axios";
+import diaryService from "../services/diaries";
+import type { DiaryEntry, NewDiaryEntry, Visibility, Weather } from "../types";
 
 export interface EntryFormProps {
-  addEntry: (arg0: NewDiaryEntry) => Promise<void>;
+  addEntry: (arg0: DiaryEntry) => Promise<void>;
 }
 
 const EntryForm = (props: EntryFormProps) => {
   const [date, setDate] = useState("");
-  const [visibility, setVisibility] = useState("");
-  const [weather, setWeather] = useState("");
-  const [comment, setComment] = useState("");
+  const [visibility, setVisibility] = useState<string>("");
+  const [weather, setWeather] = useState<string>("");
+  const [comment, setComment] = useState<string>("");
+  const [error, setError] = useState<string>("")
 
   const onSubmit = async (event: React.SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
+    setError("");
     const newEntry: NewDiaryEntry = {
       date,
       visibility: visibility as Visibility,
       weather: weather as Weather,
       comment,
     };
-    await props.addEntry(newEntry);
-    setDate("");
-    setVisibility("");
-    setWeather("");
-    setComment("");
+
+    try {
+      const addedEntry = await diaryService.create(newEntry);
+      await props.addEntry(addedEntry);
+
+      setDate("");
+      setVisibility("");
+      setWeather("");
+      setComment("");
+    } catch (e) {
+      if (axios.isAxiosError<string, Record<string, unknown>>(e)) {
+        if (e.response) {
+          setError(e.response.data);
+        }
+      } else {
+        console.error(e);
+      }
+    };
   };
 
   return (
     <>
+      {error && (
+        <p style={{ color: "red" }}>{error}</p>
+      )}
       <form onSubmit={onSubmit}>
         <div>
           <label>
@@ -54,7 +74,7 @@ const EntryForm = (props: EntryFormProps) => {
           </label>
         </div>
         <div>
-          <button type="submit">add</button>
+          <button type="submit">Add</button>
         </div>
       </form>
     </>
