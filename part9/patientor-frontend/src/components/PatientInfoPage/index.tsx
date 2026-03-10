@@ -3,6 +3,8 @@ import { Male, Female, HelpOutline } from "@mui/icons-material";
 import patientService from "../../services/patients";
 import { Gender, Patient } from "../../types";
 import { useEffect, useState } from "react";
+import { Box } from "@mui/material";
+import EntryComponent from "./EntryComponent";
 
 interface Props {
   patients: Patient[];
@@ -28,10 +30,18 @@ const PatientInfoPage = ({ patients }: Props) => {
 
   return (
     <>
-      <h2>{patient.name}<Icon gender={patient.gender} /></h2>
-      <p>Date of birth: {patient.dateOfBirth}</p>
-      <p>SSN: {patient.ssn}</p>
-      <p>Occupation: {patient.occupation}</p>
+      <Box>
+        <h2>{patient.name}<Icon gender={patient.gender} /></h2>
+        <p>Date of birth: {patient.dateOfBirth}</p>
+        <p>SSN: {patient.ssn}</p>
+        <p>Occupation: {patient.occupation}</p>
+      </Box>
+      {patient.entries && patient.entries.length !== 0 && (
+        <Box>
+          <h3>Entries</h3>
+          {patient.entries.map(entry => <EntryComponent key={entry.id} entry={entry} />)}
+        </Box>
+      )}
     </>
   );
 };
